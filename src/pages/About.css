@@ -1,0 +1,63 @@
+.about-intro-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: center;
+}
+.about-intro-text { display: flex; flex-direction: column; }
+.pillars-row { display: flex; flex-direction: column; gap: 1.25rem; margin-top: 1.5rem; }
+.pillar-chip { display: flex; gap: 1rem; align-items: flex-start; }
+.pillar-icon { color: var(--color-primary); flex-shrink: 0; margin-top: 3px; }
+.pillar-chip strong { display: block; font-family: var(--font-heading); color: var(--color-primary-dark); margin-bottom: 0.2rem; }
+.pillar-chip p { font-size: 0.875rem; color: var(--color-text-muted); }
+
+.about-intro-img-wrap { position: relative; }
+.about-intro-img { width: 100%; border-radius: var(--radius-xl); box-shadow: var(--shadow-xl); aspect-ratio: 4/3; object-fit: cover; }
+.about-intro-img-badge {
+  position: absolute;
+  bottom: -1.5rem;
+  right: -1.5rem;
+  padding: 1.5rem 2rem;
+  text-align: center;
+}
+.about-intro-img-badge strong { display: block; font-family: var(--font-heading); font-size: 2.25rem; font-weight: 900; color: var(--color-primary); line-height: 1; }
+.about-intro-img-badge span { font-size: 0.8rem; color: var(--color-text-muted); }
+
+/* USP */
+.usp-bg-shape { position: absolute; right: -200px; top: -200px; width: 600px; height: 600px; background: rgba(255,255,255,0.05); border-radius: 50%; pointer-events: none; }
+.usp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-top: 1rem; }
+.usp-item {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.5rem;
+  color: white;
+  font-weight: 500;
+  backdrop-filter: blur(4px);
+  transition: var(--transition-fast);
+}
+.usp-item:hover { background: rgba(255,255,255,0.18); }
+.usp-item svg { flex-shrink: 0; color: rgba(255,255,255,0.9); }
+
+/* Brands detail grid */
+.brands-detail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; }
+.brand-detail-card { padding: 2rem; display: flex; flex-direction: column; gap: 0.75rem; }
+.brand-detail-name { font-family: var(--font-heading); font-size: 2rem; font-weight: 900; color: var(--color-primary-dark); }
+.brand-detail-desc { color: var(--color-text-muted); font-size: 0.875rem; line-height: 1.6; }
+
+/* Industry */
+.industry-card { overflow: hidden; }
+.industry-img-wrap { overflow: hidden; }
+.industry-img { width: 100%; height: 210px; object-fit: cover; transition: transform 0.5s var(--ease-smooth); }
+.industry-card:hover .industry-img { transform: scale(1.06); }
+.industry-body { padding: 1.5rem; }
+.industry-body h3 { margin-bottom: 0.5rem; font-size: 1.1rem; }
+.industry-body p { color: var(--color-text-muted); font-size: 0.9rem; line-height: 1.6; }
+
+@media (max-width: 900px) {
+  .about-intro-grid { grid-template-columns: 1fr; gap: 3rem; }
+  .about-intro-img-badge { right: 1rem; }
+}
