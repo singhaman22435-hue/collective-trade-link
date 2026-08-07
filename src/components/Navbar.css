@@ -134,6 +134,11 @@
   .nav-toggle { display: flex; }
   .nav-overlay { display: block; }
 
+  /* Scale down brand elements for tablets/mobile */
+  .brand-logo { height: 52px; }
+  .brand-name { font-size: 0.95rem; }
+  
+
   .navbar-nav {
     position: fixed;
     top: 0;
@@ -166,4 +171,11 @@
     margin-top: 1rem;
     width: 100%;
   }
+}
+
+@media (max-width: 500px) {
+  .brand-logo { height: 42px; }
+  .brand-name { font-size: 0.85rem; }
+  .brand-tagline { display: none; /* Hide tagline on small mobile to save horizontal space */ }
+  .navbar-brand { gap: 0.5rem; max-width: 80%; }
 }
