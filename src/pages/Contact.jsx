@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Phone, Send, CheckCircle } from 'lucide-react';
+import { Mail, Phone, Send, CheckCircle, MapPin } from 'lucide-react';
 import { useInquiries } from '../context/InquiryContext';
+import TiltCard from '../components/TiltCard';
 import './Contact.css';
 
 const Contact = () => {
@@ -46,29 +47,43 @@ const Contact = () => {
               </p>
 
               <div className="contact-info-cards">
-                <div className="contact-info-card glass-card">
-                  <div className="contact-info-icon"><Phone size={22} /></div>
-                  <div>
-                    <h4>Call Us</h4>
-                    <p><strong>Monil Mehta</strong></p>
-                    <p>+91 9653343336</p>
-                    <p>+91 9594000246</p>
-                    <br />
-                    <p><strong>Nitin Mehta</strong></p>
-                    <p>+91 9323132460</p>
-                    <p>+91 8591173422</p>
+                <TiltCard>
+                  <div className="contact-info-card glass-card">
+                    <div className="contact-info-icon"><Phone size={22} /></div>
+                    <div>
+                      <h4>Call Us</h4>
+                      <p><strong>Monil Mehta</strong></p>
+                      <p>+91 9653343336</p>
+                      <p>+91 9594000246</p>
+                      <br />
+                      <p><strong>Nitin Mehta</strong></p>
+                      <p>+91 9323132460</p>
+                      <p>+91 8591173422</p>
+                    </div>
                   </div>
-                </div>
+                </TiltCard>
 
-                <div className="contact-info-card glass-card">
-                  <div className="contact-info-icon"><Mail size={22} /></div>
-                  <div>
-                    <h4>Email Us</h4>
-                    <a href="mailto:collectivetradelinks@gmail.com">collectivetradelinks@gmail.com</a>
-                    <br />
-                    <a href="mailto:monilmehta32@gmail.com">monilmehta32@gmail.com</a>
+                <TiltCard>
+                  <div className="contact-info-card glass-card">
+                    <div className="contact-info-icon"><Mail size={22} /></div>
+                    <div>
+                      <h4>Email Us</h4>
+                      <a href="mailto:collectivetradelinks@gmail.com">collectivetradelinks@gmail.com</a>
+                      <br />
+                      <a href="mailto:monilmehta32@gmail.com">monilmehta32@gmail.com</a>
+                    </div>
                   </div>
-                </div>
+                </TiltCard>
+
+                <TiltCard>
+                  <div className="contact-info-card glass-card">
+                    <div className="contact-info-icon"><MapPin size={22} /></div>
+                    <div>
+                      <h4>Head Office</h4>
+                      <p>Mumbai, Maharashtra, India</p>
+                    </div>
+                  </div>
+                </TiltCard>
               </div>
             </motion.div>
 
@@ -111,14 +126,36 @@ const Contact = () => {
                       <label htmlFor="contact-message">Message *</label>
                       <textarea id="contact-message" name="message" rows="5" placeholder="Tell us how we can help you..." value={form.message} onChange={handleChange} required />
                     </div>
-                    <button type="submit" className="btn btn-primary btn-lg w-full" disabled={loading}>
-                      {loading ? 'Sending...' : (<>Send Message <Send size={18} /></>)}
+                    <button type="submit" className="btn btn-primary btn-lg w-full" disabled={loading} style={{ position: 'relative', overflow: 'hidden' }}>
+                      <motion.div whileTap={{ scale: 0.95 }} style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}>
+                        {loading ? 'Sending...' : (<>Send Message <Send size={18} /></>)}
+                      </motion.div>
                     </button>
                   </form>
                 </>
               )}
             </motion.div>
           </div>
+          
+          {/* Map Section */}
+          <motion.div 
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            style={{ marginTop: '4rem', borderRadius: 'var(--radius-lg)', overflow: 'hidden', height: '400px', boxShadow: 'var(--shadow-md)', border: '1px solid var(--color-border)' }}
+          >
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d241317.11609823277!2d72.74109995709657!3d19.08219783958221!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c6306644edc1%3A0x5da4ed8f8d648c69!2sMumbai%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1709123456789!5m2!1sen!2sin" 
+              width="100%" 
+              height="100%" 
+              style={{ border: 0 }} 
+              allowFullScreen="" 
+              loading="lazy" 
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Collective Trade Links Location"
+            ></iframe>
+          </motion.div>
         </div>
       </section>
     </div>

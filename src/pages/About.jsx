@@ -1,8 +1,9 @@
 import React, { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, CheckCircle, Users, Award, TrendingUp } from 'lucide-react';
+import { ArrowRight, CheckCircle, Users, Award, TrendingUp, Target, ShieldCheck } from 'lucide-react';
 import './About.css';
+import TiltCard from '../components/TiltCard';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -48,112 +49,181 @@ const USP = [
   'Dedicated Account Management',
 ];
 
-const About = () => (
-  <div className="about-page">
-    {/* Page Hero */}
-    <section className="page-hero">
-      <div className="container">
-        <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="section-label" style={{ background: 'rgba(255,255,255,0.15)', borderColor: 'rgba(255,255,255,0.3)', color: 'white' }}>Our Story</motion.span>
-        <motion.h1 initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>About Us</motion.h1>
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>Connecting Industries, Delivering Excellence — Since Decades.</motion.p>
-      </div>
-    </section>
+const TIMELINE = [
+  { year: '2010', title: 'The Beginning', desc: 'Founded with a vision to provide authentic bearings to the Indian industrial sector.' },
+  { year: '2015', title: 'Expansion', desc: 'Expanded our portfolio to include linear motion systems and high-grade lubricants.' },
+  { year: '2019', title: 'Authorized Distributorship', desc: 'Became authorized distributors for major brands like KOYO and CNZ.' },
+  { year: '2023', title: 'National Reach', desc: 'Established a robust Pan-India supply chain, serving over 500+ clients.' },
+];
 
-    {/* WHO ARE WE */}
-    <section className="section" style={{ background: 'var(--color-bg)' }}>
-      <div className="container about-intro-grid">
-        <AnimatedSection className="about-intro-text">
-          <motion.span variants={fadeUp} className="section-label">Who Are We</motion.span>
-          <motion.h2 variants={fadeUp} className="section-title">A Trusted Name in<br /><span className="gradient-text">Industrial Components</span></motion.h2>
-          <motion.p variants={fadeUp} style={{ color: 'var(--color-text-muted)', fontSize: '1.1rem', lineHeight: 1.8, marginBottom: '2rem' }}>
-            Collective Trade Links stands as a beacon of reliability and expertise in the distribution and import of high-quality industrial products. With years of experience and a steadfast customer-first approach, we've built a reputation founded on trust and unwavering commitment to client success.
-          </motion.p>
-          <motion.div variants={fadeUp} className="pillars-row">
-            {[{ Icon: Award, t: 'Trust & Experience', d: 'Decades of industry presence' }, { Icon: Users, t: 'Customer-First', d: 'Dedicated to your success' }, { Icon: TrendingUp, t: 'Industry Leadership', d: 'Pioneering distribution' }].map(({ Icon, t, d }) => (
-              <div key={t} className="pillar-chip">
-                <Icon size={22} className="pillar-icon" />
-                <div><strong>{t}</strong><p>{d}</p></div>
-              </div>
-            ))}
-          </motion.div>
-          <motion.div variants={fadeUp} style={{ marginTop: '2rem' }}>
-            <Link to="/contact" className="btn btn-primary">Get in Touch <ArrowRight size={18} /></Link>
-          </motion.div>
-        </AnimatedSection>
-        <motion.div initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="about-intro-img-wrap">
-          <img src="/images/hero.png" alt="About Collective Trade Links" className="about-intro-img" />
-          <div className="about-intro-img-badge glass-card">
-            <strong>100%</strong>
-            <span>Authentic Products</span>
-          </div>
+const TEAM = [
+  { name: 'Monil Mehta', role: 'Director', desc: 'Driving strategic growth and international partnerships with over 15 years of industry expertise.' },
+  { name: 'Nitin Mehta', role: 'Operations Head', desc: 'Ensuring seamless supply chain management and unparalleled customer service delivery.' },
+];
+
+const About = () => {
+  const { scrollY } = useScroll();
+  const y1 = useTransform(scrollY, [0, 800], [0, 150]);
+  const y2 = useTransform(scrollY, [0, 800], [0, -100]);
+  
+  return (
+    <div className="about-page">
+      {/* Page Hero with Parallax */}
+      <section className="page-hero" style={{ overflow: 'hidden', position: 'relative' }}>
+        <motion.div className="hero-bg-shapes" style={{ y: y1 }}>
+          <div className="shape shape-1" style={{ background: 'rgba(255,255,255,0.05)' }} />
+          <div className="shape shape-2" style={{ background: 'rgba(255,255,255,0.05)' }} />
         </motion.div>
-      </div>
-    </section>
+        <div className="container relative z-10">
+          <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="section-label" style={{ background: 'rgba(255,255,255,0.15)', borderColor: 'rgba(255,255,255,0.3)', color: 'white' }}>Our Story</motion.span>
+          <motion.h1 initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>About Us</motion.h1>
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>Connecting Industries, Delivering Excellence — Since Decades.</motion.p>
+        </div>
+      </section>
 
-    {/* USP */}
-    <section className="section" style={{ background: 'var(--gradient-primary)', position: 'relative', overflow: 'hidden' }}>
-      <div className="usp-bg-shape" />
-      <div className="container">
-        <AnimatedSection className="section-header">
-          <motion.span variants={fadeUp} className="section-label" style={{ background: 'rgba(255,255,255,0.15)', borderColor: 'rgba(255,255,255,0.3)', color: 'white' }}>Our Strengths</motion.span>
-          <motion.h2 variants={fadeUp} className="section-title" style={{ color: 'white' }}>Our Unique Selling <span style={{ opacity: 0.9 }}>Proposition</span></motion.h2>
-          <motion.p variants={fadeUp} className="section-subtitle" style={{ color: 'rgba(255,255,255,0.75)' }}>Key strengths that make us the preferred partner for industrial components.</motion.p>
-        </AnimatedSection>
-        <AnimatedSection className="usp-grid">
-          {USP.map((item, i) => (
-            <motion.div key={item} custom={i} variants={fadeUp} className="usp-item">
-              <CheckCircle size={20} />
-              <span>{item}</span>
+      {/* WHO ARE WE */}
+      <section className="section" style={{ background: 'var(--color-bg)' }}>
+        <div className="container about-intro-grid">
+          <AnimatedSection className="about-intro-text">
+            <motion.span variants={fadeUp} className="section-label">Who Are We</motion.span>
+            <motion.h2 variants={fadeUp} className="section-title">A Trusted Name in<br /><span className="gradient-text">Industrial Components</span></motion.h2>
+            <motion.p variants={fadeUp} style={{ color: 'var(--color-text-muted)', fontSize: '1.1rem', lineHeight: 1.8, marginBottom: '2rem' }}>
+              Collective Trade Links stands as a beacon of reliability and expertise in the distribution and import of high-quality industrial products. With years of experience and a steadfast customer-first approach, we've built a reputation founded on trust and unwavering commitment to client success.
+            </motion.p>
+            <motion.div variants={fadeUp} className="pillars-row">
+              {[{ Icon: Award, t: 'Trust & Experience', d: 'Decades of industry presence' }, { Icon: Users, t: 'Customer-First', d: 'Dedicated to your success' }, { Icon: TrendingUp, t: 'Industry Leadership', d: 'Pioneering distribution' }].map(({ Icon, t, d }) => (
+                <div key={t} className="pillar-chip">
+                  <Icon size={22} className="pillar-icon" />
+                  <div><strong>{t}</strong><p>{d}</p></div>
+                </div>
+              ))}
             </motion.div>
-          ))}
-        </AnimatedSection>
-      </div>
-    </section>
+            <motion.div variants={fadeUp} style={{ marginTop: '2rem' }}>
+              <Link to="/contact" className="btn btn-primary">Get in Touch <ArrowRight size={18} /></Link>
+            </motion.div>
+          </AnimatedSection>
+          <motion.div initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="about-intro-img-wrap" style={{ y: y2 }}>
+            <img src="/images/hero.png" alt="About Collective Trade Links" className="about-intro-img" />
+            <div className="about-intro-img-badge glass-card">
+              <strong>100%</strong>
+              <span>Authentic Products</span>
+            </div>
+          </motion.div>
+        </div>
+      </section>
 
-    {/* BRANDS */}
-    <section className="section" style={{ background: 'var(--color-bg-alt)' }}>
-      <div className="container">
-        <AnimatedSection className="section-header">
-          <motion.span variants={fadeUp} className="section-label">Our Partners</motion.span>
-          <motion.h2 variants={fadeUp} className="section-title">Trusted <span className="gradient-text">Brand Partners</span></motion.h2>
-          <motion.p variants={fadeUp} className="section-subtitle">We are authorized distributors and direct importers of these world-class brands.</motion.p>
-        </AnimatedSection>
-        <AnimatedSection className="brands-detail-grid">
-          {BRANDS.map((brand, i) => (
-            <motion.div key={brand.name} custom={i} variants={fadeUp} className="brand-detail-card glass-card">
-              <div className="brand-detail-name">{brand.name}</div>
-              <span className="badge badge-primary">{brand.role}</span>
-              <p className="brand-detail-desc">{brand.desc}</p>
-            </motion.div>
-          ))}
-        </AnimatedSection>
-      </div>
-    </section>
+      {/* OUR JOURNEY TIMELINE */}
+      <section className="section" style={{ background: 'var(--color-bg-alt)' }}>
+        <div className="container">
+          <AnimatedSection className="section-header">
+            <motion.span variants={fadeUp} className="section-label">Our History</motion.span>
+            <motion.h2 variants={fadeUp} className="section-title">The <span className="gradient-text">Journey</span></motion.h2>
+          </AnimatedSection>
+          
+          <AnimatedSection className="timeline-wrap">
+            <div className="timeline-line" />
+            {TIMELINE.map((item, i) => (
+              <motion.div key={item.year} variants={fadeUp} className={`timeline-item ${i % 2 === 0 ? 'left' : 'right'}`}>
+                <div className="timeline-dot" />
+                <div className="timeline-year">{item.year}</div>
+                <h3 className="timeline-title">{item.title}</h3>
+                <p style={{ color: 'var(--color-text-muted)' }}>{item.desc}</p>
+              </motion.div>
+            ))}
+          </AnimatedSection>
+        </div>
+      </section>
 
-    {/* INDUSTRIES */}
-    <section className="section" style={{ background: 'var(--color-bg)' }}>
-      <div className="container">
-        <AnimatedSection className="section-header">
-          <motion.span variants={fadeUp} className="section-label">Industries Served</motion.span>
-          <motion.h2 variants={fadeUp} className="section-title">Major Industries <span className="gradient-text">We Serve</span></motion.h2>
-          <motion.p variants={fadeUp} className="section-subtitle">Diverse Applications Across Multiple Sectors</motion.p>
-        </AnimatedSection>
-        <AnimatedSection className="grid-3">
-          {INDUSTRIES.map((ind, i) => (
-            <motion.div key={ind.title} custom={i} variants={fadeUp} className="industry-card card">
-              <div className="industry-img-wrap">
-                <img src={ind.img} alt={ind.title} className="industry-img" />
-              </div>
-              <div className="industry-body">
-                <h3>{ind.title}</h3>
-                <p>{ind.desc}</p>
-              </div>
-            </motion.div>
-          ))}
-        </AnimatedSection>
-      </div>
-    </section>
-  </div>
-);
+      {/* USP */}
+      <section className="section" style={{ background: 'var(--gradient-primary)', position: 'relative', overflow: 'hidden' }}>
+        <div className="usp-bg-shape" />
+        <div className="container relative z-10">
+          <AnimatedSection className="section-header">
+            <motion.span variants={fadeUp} className="section-label" style={{ background: 'rgba(255,255,255,0.15)', borderColor: 'rgba(255,255,255,0.3)', color: 'white' }}>Our Strengths</motion.span>
+            <motion.h2 variants={fadeUp} className="section-title" style={{ color: 'white' }}>Our Unique Selling <span style={{ opacity: 0.9 }}>Proposition</span></motion.h2>
+            <motion.p variants={fadeUp} className="section-subtitle" style={{ color: 'rgba(255,255,255,0.75)' }}>Key strengths that make us the preferred partner for industrial components.</motion.p>
+          </AnimatedSection>
+          <AnimatedSection className="usp-grid">
+            {USP.map((item, i) => (
+              <motion.div key={item} custom={i} variants={fadeUp}>
+                <TiltCard className="usp-item">
+                  <CheckCircle size={20} />
+                  <span>{item}</span>
+                </TiltCard>
+              </motion.div>
+            ))}
+          </AnimatedSection>
+        </div>
+      </section>
+
+      {/* LEADERSHIP TEAM */}
+      <section className="section" style={{ background: 'var(--color-bg)' }}>
+        <div className="container">
+          <AnimatedSection className="section-header">
+            <motion.span variants={fadeUp} className="section-label">Leadership</motion.span>
+            <motion.h2 variants={fadeUp} className="section-title">Meet Our <span className="gradient-text">Team</span></motion.h2>
+            <motion.p variants={fadeUp} className="section-subtitle">Dedicated professionals driving industrial excellence.</motion.p>
+          </AnimatedSection>
+          <AnimatedSection className="team-grid">
+            {TEAM.map((member, i) => (
+              <motion.div key={member.name} variants={fadeUp} custom={i}>
+                <TiltCard className="team-card glass-card">
+                  <div className="team-avatar">{member.name[0]}</div>
+                  <h3 className="team-name">{member.name}</h3>
+                  <div className="team-role">{member.role}</div>
+                  <p style={{ color: 'var(--color-text-muted)' }}>{member.desc}</p>
+                </TiltCard>
+              </motion.div>
+            ))}
+          </AnimatedSection>
+        </div>
+      </section>
+
+      {/* BRANDS */}
+      <section className="section" style={{ background: 'var(--color-bg-alt)' }}>
+        <div className="container">
+          <AnimatedSection className="section-header">
+            <motion.span variants={fadeUp} className="section-label">Our Partners</motion.span>
+            <motion.h2 variants={fadeUp} className="section-title">Trusted <span className="gradient-text">Brand Partners</span></motion.h2>
+            <motion.p variants={fadeUp} className="section-subtitle">We are authorized distributors and direct importers of these world-class brands.</motion.p>
+          </AnimatedSection>
+          <AnimatedSection className="brands-detail-grid">
+            {BRANDS.map((brand, i) => (
+              <motion.div key={brand.name} custom={i} variants={fadeUp} className="brand-detail-card glass-card">
+                <div className="brand-detail-name">{brand.name}</div>
+                <span className="badge badge-primary">{brand.role}</span>
+                <p className="brand-detail-desc">{brand.desc}</p>
+              </motion.div>
+            ))}
+          </AnimatedSection>
+        </div>
+      </section>
+
+      {/* INDUSTRIES */}
+      <section className="section" style={{ background: 'var(--color-bg)' }}>
+        <div className="container">
+          <AnimatedSection className="section-header">
+            <motion.span variants={fadeUp} className="section-label">Industries Served</motion.span>
+            <motion.h2 variants={fadeUp} className="section-title">Major Industries <span className="gradient-text">We Serve</span></motion.h2>
+            <motion.p variants={fadeUp} className="section-subtitle">Diverse Applications Across Multiple Sectors</motion.p>
+          </AnimatedSection>
+          <AnimatedSection className="grid-3">
+            {INDUSTRIES.map((ind, i) => (
+              <motion.div key={ind.title} custom={i} variants={fadeUp} className="industry-card card">
+                <div className="industry-img-wrap">
+                  <img src={ind.img} alt={ind.title} className="industry-img" />
+                </div>
+                <div className="industry-body">
+                  <h3>{ind.title}</h3>
+                  <p>{ind.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatedSection>
+        </div>
+      </section>
+    </div>
+  );
+};
 
 export default About;

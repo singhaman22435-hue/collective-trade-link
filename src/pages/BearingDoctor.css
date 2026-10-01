@@ -1,0 +1,332 @@
+.doctor-page {
+  padding-top: 80px;
+  background-color: var(--color-bg);
+  min-height: 100vh;
+}
+
+.doctor-hero {
+  background: var(--gradient-primary);
+  padding: 4rem 0 3rem;
+  color: white;
+  text-align: center;
+  position: relative;
+}
+
+.doctor-hero-content {
+  position: relative;
+  z-index: 10;
+}
+
+.doctor-hero-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.doctor-hero-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  color: white;
+  margin: 0;
+}
+
+.doctor-hero-desc {
+  font-size: 1.125rem;
+  opacity: 0.9;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.doctor-container {
+  max-width: 900px;
+  padding: 3rem 1rem;
+  margin: 0 auto;
+}
+
+/* Progress Bar */
+.doctor-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2.5rem;
+}
+
+.doctor-progress-bar {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+}
+
+.doctor-step-node {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: white;
+  background-color: #d1d5db; /* gray-300 */
+  transition: background-color 0.3s ease;
+}
+
+.doctor-step-node.active {
+  background-color: var(--color-primary);
+}
+
+.doctor-step-line {
+  flex: 1;
+  height: 4px;
+  background-color: #d1d5db;
+  transition: background-color 0.3s ease;
+}
+
+.doctor-step-line.active {
+  background-color: var(--color-primary);
+}
+
+/* Wizard Box */
+.doctor-wizard {
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
+  padding: 2rem;
+  min-height: 400px;
+}
+
+@media (min-width: 768px) {
+  .doctor-wizard {
+    padding: 3rem;
+  }
+}
+
+.doctor-step-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.doctor-step-title.left {
+  text-align: left;
+  margin: 0;
+}
+
+/* Step 1 Grid */
+.doctor-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.doctor-symptom-btn {
+  padding: 1.5rem;
+  border: 2px solid var(--color-border);
+  border-radius: 0.75rem;
+  background: white;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.doctor-symptom-btn:hover {
+  border-color: var(--color-primary);
+  background-color: var(--blue-50);
+}
+
+.doctor-symptom-icon {
+  font-size: 2.5rem;
+  transition: transform 0.2s ease;
+}
+
+.doctor-symptom-btn:hover .doctor-symptom-icon {
+  transform: scale(1.1);
+}
+
+.doctor-symptom-label {
+  font-weight: 600;
+  font-size: 1.125rem;
+  color: var(--color-text);
+}
+
+/* Step 2 Grid */
+.doctor-header-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.doctor-back-btn {
+  padding: 0.5rem;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.doctor-back-btn:hover {
+  background-color: var(--color-bg-alt);
+}
+
+.doctor-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.doctor-detail-btn {
+  text-align: left;
+  border: 2px solid var(--color-border);
+  border-radius: 0.75rem;
+  background: white;
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: all 0.2s ease;
+}
+
+.doctor-detail-btn:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.doctor-detail-img {
+  height: 120px;
+  background-color: #e2e8f0;
+  width: 100%;
+  position: relative;
+}
+
+.doctor-detail-img-placeholder {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom right, #d1d5db, #9ca3af);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4b5563;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.doctor-detail-no-img {
+  height: 80px;
+  background-color: var(--color-bg-alt);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.doctor-detail-content {
+  padding: 1rem;
+  flex: 1;
+}
+
+.doctor-detail-title {
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 0.25rem;
+  font-size: 1rem;
+}
+
+.doctor-detail-desc {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+/* Step 3 Report */
+.doctor-report-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.doctor-report-icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background-color: var(--blue-100);
+  color: var(--color-primary);
+  margin-bottom: 1rem;
+}
+
+.doctor-report-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.doctor-report-subtitle {
+  color: var(--color-text-muted);
+  margin-top: 0.5rem;
+}
+
+.doctor-alert {
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.doctor-alert-danger {
+  background-color: #fef2f2;
+  border: 1px solid #fee2e2;
+}
+
+.doctor-alert-success {
+  background-color: #f0fdf4;
+  border: 1px solid #dcfce7;
+}
+
+.doctor-alert-icon.danger { color: #ef4444; }
+.doctor-alert-icon.success { color: #16a34a; }
+
+.doctor-alert-content {
+  flex: 1;
+}
+
+.doctor-alert-heading {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.doctor-alert-danger .doctor-alert-heading { color: #991b1b; }
+.doctor-alert-danger p { color: #b91c1c; }
+
+.doctor-alert-success .doctor-alert-heading { color: #166534; }
+.doctor-alert-success p { color: #15803d; }
+
+.doctor-report-actions {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.doctor-disclaimer {
+  font-size: 0.875rem;
+  color: #9ca3af;
+  margin-top: 1.5rem;
+}

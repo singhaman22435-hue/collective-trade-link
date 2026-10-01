@@ -25,11 +25,10 @@ const Navbar = () => {
     window.scrollTo(0, 0);
   }, [location]);
 
-  const navLinks = [
+  const mainLinks = [
     { to: '/', label: 'Home' },
     { to: '/about', label: 'About Us' },
     { to: '/products', label: 'Products' },
-    { to: '/contact', label: 'Contact Us' },
   ];
 
   return (
@@ -46,7 +45,7 @@ const Navbar = () => {
           </Link>
 
           <nav className={`navbar-nav ${isOpen ? 'nav--open' : ''}`}>
-            {navLinks.map((link) => (
+            {mainLinks.map((link) => (
               <Link
                 key={link.to}
                 to={link.to}
@@ -55,6 +54,35 @@ const Navbar = () => {
                 {link.label}
               </Link>
             ))}
+
+            {/* Tools Dropdown */}
+            <div className="nav-dropdown">
+              <button className={`nav-link dropdown-toggle ${(location.pathname === '/finder' || location.pathname === '/doctor') ? 'nav-link--active' : ''}`}>
+                Tools <ChevronRight size={14} style={{ transform: 'rotate(90deg)' }}/>
+              </button>
+              <div className="dropdown-menu">
+                <Link to="/finder" className="dropdown-item">Bearing Finder</Link>
+                <Link to="/doctor" className="dropdown-item">Bearing Doctor</Link>
+              </div>
+            </div>
+
+            {/* Brands Dropdown */}
+            <div className="nav-dropdown">
+              <button className={`nav-link dropdown-toggle ${location.pathname === '/cnz-bearings' ? 'nav-link--active' : ''}`}>
+                Brands <ChevronRight size={14} style={{ transform: 'rotate(90deg)' }}/>
+              </button>
+              <div className="dropdown-menu">
+                <Link to="/cnz-bearings" className="dropdown-item">CNZ Bearings</Link>
+              </div>
+            </div>
+
+            <Link
+              to="/contact"
+              className={`nav-link ${location.pathname === '/contact' ? 'nav-link--active' : ''}`}
+            >
+              Contact Us
+            </Link>
+
             <Link to="/contact" className="btn btn-primary btn-sm nav-cta">
               Get Quote <ChevronRight size={16} />
             </Link>

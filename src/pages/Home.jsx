@@ -1,18 +1,24 @@
-import React, { useRef, useState } from 'react';
-import { motion, useInView } from 'framer-motion';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
+import { motion, useInView, useScroll, useTransform, useMotionValue, useSpring, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
   ChevronRight, Shield, Zap, Tag, Briefcase, ArrowRight, CheckCircle,
   Phone, Mail, Star, Clock, MapPin, Award, Users, TrendingUp,
-  Package, Wrench, Droplets, ChevronDown, ChevronUp, Truck, Globe, Layers
+  Package, Wrench, Droplets, ChevronDown, ChevronUp, Truck, Globe, Layers, ArrowDown
 } from 'lucide-react';
 import { useProducts } from '../context/ProductContext';
+import AnimatedCounter from '../components/AnimatedCounter';
+import TiltCard from '../components/TiltCard';
 import './Home.css';
 
-/* ─── animation helpers ─── */
+/* ─── animation variants ─── */
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
-  visible: (i = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.6, delay: i * 0.12, ease: [0.4, 0, 0.2, 1] } }),
+  visible: (i = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.7, delay: i * 0.12, ease: [0.16, 1, 0.3, 1] } }),
+};
+const fadeScale = {
+  hidden: { opacity: 0, scale: 0.9, y: 30 },
+  visible: (i = 0) => ({ opacity: 1, scale: 1, y: 0, transition: { duration: 0.7, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] } }),
 };
 const stagger = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.12 } } };
 const AnimatedSection = ({ children, className = '' }) => {
@@ -21,12 +27,159 @@ const AnimatedSection = ({ children, className = '' }) => {
   return <motion.div ref={ref} initial="hidden" animate={inView ? 'visible' : 'hidden'} variants={stagger} className={className}>{children}</motion.div>;
 };
 
+/* ─── 3D Floating Particle Field ─── */
+const ParticleField = () => {
+  const particles = useRef(
+    Array.from({ length: 40 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 4 + 1,
+      duration: Math.random() * 15 + 10,
+      delay: Math.random() * 5,
+      opacity: Math.random() * 0.3 + 0.1,
+    }))
+  ).current;
+
+  return (
+    <div className="hero-particles" aria-hidden="true">
+      {particles.map((p) => (
+        <motion.div
+          key={p.id}
+          className="hero-particle"
+          style={{
+            left: `${p.x}%`,
+            top: `${p.y}%`,
+            width: p.size,
+            height: p.size,
+          }}
+          animate={{
+            y: [0, -80, 0],
+            x: [0, Math.random() * 40 - 20, 0],
+            opacity: [p.opacity, p.opacity * 2, p.opacity],
+          }}
+          transition={{
+            duration: p.duration,
+            repeat: Infinity,
+            delay: p.delay,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
+/* ─── 3D Floating Badge ─── */
+const Float3DBadge = ({ children, className = '', delay = 0, offsetY = 0, duration = 5 }) => (
+  <motion.div
+    className={className}
+    initial={{ opacity: 0, y: 30, rotateX: 15 }}
+    animate={{ opacity: 1, y: 0, rotateX: 0 }}
+    transition={{ duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] }}
+    style={{ perspective: 800, transformStyle: 'preserve-3d' }}
+  >
+    <motion.div
+      animate={{
+        y: [offsetY, offsetY - 12, offsetY],
+        rotateZ: [-1, 1, -1],
+      }}
+      transition={{ duration, repeat: Infinity, ease: 'easeInOut' }}
+    >
+      {children}
+    </motion.div>
+  </motion.div>
+);
+
+/* ─── Typewriter Effect ─── */
+const Typewriter = ({ words, className = '' }) => {
+  const [index, setIndex] = useState(0);
+  useEffect(() => {
+    const timer = setInterval(() => setIndex((prev) => (prev + 1) % words.length), 3000);
+    return () => clearInterval(timer);
+  }, [words.length]);
+
+  return (
+    <span className={className} style={{ display: 'inline-block', minWidth: '280px' }}>
+      <AnimatePresence mode="wait">
+        <motion.span
+          key={words[index]}
+          initial={{ opacity: 0, y: 20, rotateX: 45 }}
+          animate={{ opacity: 1, y: 0, rotateX: 0 }}
+          exit={{ opacity: 0, y: -20, rotateX: -45 }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          style={{ display: 'inline-block' }}
+        >
+          {words[index]}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  );
+};
+
+/* ─── 3D Mouse-tracking Hero Image ─── */
+const Hero3DImage = ({ scrollY }) => {
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const rotateX = useSpring(useTransform(mouseY, [-300, 300], [8, -8]), { stiffness: 100, damping: 30 });
+  const rotateY = useSpring(useTransform(mouseX, [-300, 300], [-8, 8]), { stiffness: 100, damping: 30 });
+  const y2 = useTransform(scrollY, [0, 1000], [0, -120]);
+
+  const handleMouseMove = useCallback((e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    mouseX.set(e.clientX - rect.left - rect.width / 2);
+    mouseY.set(e.clientY - rect.top - rect.height / 2);
+  }, [mouseX, mouseY]);
+
+  const handleMouseLeave = useCallback(() => {
+    mouseX.set(0);
+    mouseY.set(0);
+  }, [mouseX, mouseY]);
+
+  return (
+    <motion.div
+      className="hero-image-side"
+      initial={{ opacity: 0, x: 80, rotateY: -15 }}
+      animate={{ opacity: 1, x: 0, rotateY: 0 }}
+      transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+      style={{ y: y2, perspective: 1200 }}
+    >
+      <motion.div
+        className="hero-img-wrapper"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
+      >
+        {/* Glow ring behind image */}
+        <div className="hero-img-glow" />
+        <img src="/images/hero.png" alt="Premium industrial bearings from Collective Trade Links" className="hero-img" />
+
+        {/* 3D floating badges */}
+        <Float3DBadge className="hero-img-badge" delay={0.6} offsetY={0} duration={5}>
+          <strong><AnimatedCounter value="9" />+</strong>
+          <span>Global Brands</span>
+        </Float3DBadge>
+
+        <Float3DBadge className="hero-img-badge-2 glass-card" delay={0.8} offsetY={0} duration={6}>
+          <CheckCircle size={18} style={{ color: '#16a34a' }} />
+          <span><AnimatedCounter value="100%" /> Authentic</span>
+        </Float3DBadge>
+
+        <Float3DBadge className="hero-img-badge-3 glass-card" delay={1} offsetY={0} duration={7}>
+          <Award size={18} style={{ color: 'var(--color-primary)' }} />
+          <span>Since 2010</span>
+        </Float3DBadge>
+      </motion.div>
+    </motion.div>
+  );
+};
+
 /* ─── data ─── */
 const STATS = [
-  { value: '500+', label: 'Products Supplied' },
-  { value: '10+', label: 'Years Experience' },
-  { value: '9', label: 'Trusted Brands' },
-  { value: '100%', label: 'Authentic Products' },
+  { value: '500+', label: 'Products Supplied', icon: <Package size={22} /> },
+  { value: '10+', label: 'Years Experience', icon: <Clock size={22} /> },
+  { value: '9', label: 'Trusted Brands', icon: <Award size={22} /> },
+  { value: '100%', label: 'Authentic Products', icon: <Shield size={22} /> },
 ];
 
 const WHY_US = [
@@ -119,65 +272,154 @@ const FAQItem = ({ q, a, index }) => {
   );
 };
 
-/* ─── Main Component ─── */
+/* ══════════════════════════════════════════════════════════════
+   MAIN HOME COMPONENT
+   ══════════════════════════════════════════════════════════════ */
 const Home = () => {
   const { products } = useProducts();
   const featuredProducts = products.filter((p) => p.featured).slice(0, 3);
+
+  // Parallax
+  const { scrollY } = useScroll();
+  const y1 = useTransform(scrollY, [0, 1000], [0, 200]);
+  const opacityHero = useTransform(scrollY, [0, 600], [1, 0]);
+  const scaleHero = useTransform(scrollY, [0, 600], [1, 0.95]);
 
   return (
     <div className="home-page">
 
       {/* ═══════════════════════════════════════
-          HERO
+          HERO — 3D Cinematic
       ═══════════════════════════════════════ */}
       <section className="hero" aria-label="Hero section">
-        <div className="hero-bg-shapes">
+        {/* Animated grid background */}
+        <div className="hero-grid-bg" aria-hidden="true" />
+
+        {/* Particle field */}
+        <ParticleField />
+
+        {/* Floating orbs */}
+        <motion.div className="hero-bg-shapes" style={{ y: y1 }}>
           <div className="shape shape-1" />
           <div className="shape shape-2" />
           <div className="shape shape-3" />
-        </div>
-        <div className="container hero-content">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className="hero-badge">
+          <div className="shape shape-4" />
+        </motion.div>
+
+        {/* Hero content with 3D perspective */}
+        <motion.div
+          className="container hero-content"
+          style={{ opacity: opacityHero, scale: scaleHero }}
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 30, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="hero-badge"
+          >
             <span className="hero-badge-dot" />
             Empowering Industrial Solutions Since 2010
           </motion.div>
 
-          <motion.h1 className="hero-title" initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }}>
-            Connecting Industry,
+          <motion.h1
+            className="hero-title"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <span className="hero-title-line">Connecting Industry,</span>
             <br />
-            <span className="gradient-text">Delivering Excellence</span>
+            <span className="hero-title-line hero-title-line--gradient">
+              <Typewriter
+                words={['Delivering Excellence', 'Powering Growth', 'Ensuring Quality', 'Building Trust']}
+                className="gradient-text"
+              />
+            </span>
           </motion.h1>
 
-          <motion.p className="hero-subtitle" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.2 }}>
+          <motion.p
+            className="hero-subtitle"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          >
             Trusted importers & authorized distributors of <strong>NTN, KOYO, SKF, FAG, HIWIN, THK</strong> and more.
             Premium bearings and industrial motion components — delivered across India.
           </motion.p>
 
-          <motion.div className="hero-actions" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.35 }}>
-            <Link to="/products" className="btn btn-primary btn-lg">Explore Products <ChevronRight size={20} /></Link>
+          <motion.div
+            className="hero-actions"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <Link to="/products" className="btn btn-primary btn-lg hero-btn-primary">
+              Explore Products <ChevronRight size={20} />
+            </Link>
             <Link to="/contact" className="btn btn-outline btn-lg">Get a Free Quote</Link>
           </motion.div>
 
-          <motion.div className="hero-checks" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
-            {['Authentic Products', 'Competitive Pricing', 'Expert Technical Support', 'Pan-India Delivery'].map((c) => (
-              <span key={c} className="hero-check"><CheckCircle size={16} /> {c}</span>
+          <motion.div
+            className="hero-checks"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6, duration: 0.8 }}
+          >
+            {['Authentic Products', 'Competitive Pricing', 'Expert Technical Support', 'Pan-India Delivery'].map((c, i) => (
+              <motion.span
+                key={c}
+                className="hero-check"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.7 + i * 0.1 }}
+              >
+                <CheckCircle size={16} /> {c}
+              </motion.span>
             ))}
           </motion.div>
-        </div>
-
-        <motion.div className="hero-image-side" initial={{ opacity: 0, x: 60 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.9, delay: 0.2 }}>
-          <div className="hero-img-wrapper">
-            <img src="/images/hero.png" alt="Premium industrial bearings from Collective Trade Links" className="hero-img" />
-            <div className="hero-img-badge">
-              <strong>9+</strong>
-              <span>Global Brands</span>
-            </div>
-            <div className="hero-img-badge-2 glass-card">
-              <CheckCircle size={18} style={{ color: '#16a34a' }} />
-              <span>100% Authentic</span>
-            </div>
-          </div>
         </motion.div>
+
+        {/* 3D Hero Image */}
+        <Hero3DImage scrollY={scrollY} />
+
+        {/* Scroll indicator */}
+        <motion.div
+          className="hero-scroll-indicator"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5 }}
+        >
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <ArrowDown size={20} />
+          </motion.div>
+          <span>Scroll to explore</span>
+        </motion.div>
+      </section>
+
+      {/* ═══════════════════════════════════════
+          TRUSTED BY RIBBON
+      ═══════════════════════════════════════ */}
+      <section className="trusted-ribbon" aria-label="Trusted by leading industries">
+        <div className="container">
+          <span className="trusted-label">Trusted by leading companies across India</span>
+          <div className="trusted-logos">
+            {['Crane Mfg.', 'Parking Systems', 'Food Processing', 'Pump Industries', 'SPM Manufacturers', 'Blower Mfg.'].map((name, i) => (
+              <motion.div
+                key={i}
+                className="trusted-logo-item"
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.06 }}
+              >
+                {name}
+              </motion.div>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* ═══════════════════════════════════════
@@ -187,8 +429,11 @@ const Home = () => {
         <div className="container">
           <AnimatedSection className="stats-grid">
             {STATS.map((stat, i) => (
-              <motion.div key={stat.label} custom={i} variants={fadeUp} className="stat-item">
-                <strong className="stat-value">{stat.value}</strong>
+              <motion.div key={stat.label} custom={i} variants={fadeScale} className="stat-item">
+                <div className="stat-icon">{stat.icon}</div>
+                <strong className="stat-value">
+                   <AnimatedCounter value={stat.value} duration={2} />
+                </strong>
                 <span className="stat-label">{stat.label}</span>
               </motion.div>
             ))}
@@ -203,19 +448,20 @@ const Home = () => {
         <div className="container about-snapshot-grid">
           <motion.div
             className="about-snapshot-img-wrap"
-            initial={{ opacity: 0, x: -40 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, x: -50, rotateY: 10 }}
+            whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
+            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+            style={{ perspective: 1000 }}
           >
             <img src="/images/factory.png" alt="Collective Trade Links industrial facility" className="about-snapshot-img" />
-            <div className="about-snapshot-card glass-card">
+            <Float3DBadge className="about-snapshot-card glass-card" delay={0} offsetY={0} duration={5}>
               <Award size={28} style={{ color: 'var(--color-primary)' }} />
               <div>
                 <strong>Authorized Distributor</strong>
                 <span>KOYO &amp; CNZ Bearings</span>
               </div>
-            </div>
+            </Float3DBadge>
           </motion.div>
 
           <AnimatedSection className="about-snapshot-content">
@@ -260,12 +506,14 @@ const Home = () => {
           </AnimatedSection>
           <AnimatedSection className="grid-2">
             {WHY_US.map((item, i) => (
-              <motion.div key={item.title} custom={i} variants={fadeUp} className="why-card glass-card">
-                <div className="why-icon">{item.icon}</div>
-                <div>
-                  <h3 className="why-title">{item.title}</h3>
-                  <p className="why-desc">{item.desc}</p>
-                </div>
+              <motion.div key={item.title} custom={i} variants={fadeScale}>
+                <TiltCard className="why-card glass-card">
+                  <div className="why-icon">{item.icon}</div>
+                  <div>
+                    <h3 className="why-title">{item.title}</h3>
+                    <p className="why-desc">{item.desc}</p>
+                  </div>
+                </TiltCard>
               </motion.div>
             ))}
           </AnimatedSection>
@@ -284,12 +532,14 @@ const Home = () => {
           </AnimatedSection>
           <AnimatedSection className="process-grid">
             {PROCESS.map((step, i) => (
-              <motion.div key={step.step} custom={i} variants={fadeUp} className="process-card glass-card">
-                <div className="process-step-num">{step.step}</div>
-                <div className="process-icon">{step.icon}</div>
-                <h3 className="process-title">{step.title}</h3>
-                <p className="process-desc">{step.desc}</p>
-                {i < PROCESS.length - 1 && <div className="process-connector" />}
+              <motion.div key={step.step} custom={i} variants={fadeScale}>
+                <TiltCard className="process-card glass-card">
+                  <div className="process-step-num">{step.step}</div>
+                  <div className="process-icon">{step.icon}</div>
+                  <h3 className="process-title">{step.title}</h3>
+                  <p className="process-desc">{step.desc}</p>
+                  {i < PROCESS.length - 1 && <div className="process-connector" />}
+                </TiltCard>
               </motion.div>
             ))}
           </AnimatedSection>
@@ -308,7 +558,7 @@ const Home = () => {
           </AnimatedSection>
           <AnimatedSection className="grid-3">
             {featuredProducts.map((product, i) => (
-              <motion.div key={product.id} custom={i} variants={fadeUp} className="product-preview-card card">
+              <motion.div key={product.id} custom={i} variants={fadeScale} className="product-preview-card card">
                 <div className="product-preview-img-wrap">
                   <img src={product.image} alt={`${product.name} - Collective Trade Links`} className="product-preview-img" loading="lazy" />
                   <span className="product-preview-badge badge badge-primary">{product.category}</span>
@@ -341,7 +591,7 @@ const Home = () => {
           </AnimatedSection>
           <AnimatedSection className="industries-grid">
             {INDUSTRIES.map((ind, i) => (
-              <motion.div key={ind.name} custom={i} variants={fadeUp} className="industry-tile glass-card">
+              <motion.div key={ind.name} custom={i} variants={fadeScale} className="industry-tile glass-card">
                 <div className="industry-tile-icon">{ind.icon}</div>
                 <h3 className="industry-tile-name">{ind.name}</h3>
                 <p className="industry-tile-desc">{ind.desc}</p>
@@ -382,7 +632,7 @@ const Home = () => {
           </AnimatedSection>
           <AnimatedSection className="testimonials-grid">
             {TESTIMONIALS.map((t, i) => (
-              <motion.div key={t.name} custom={i} variants={fadeUp} className="testimonial-card glass-card">
+              <motion.div key={t.name} custom={i} variants={fadeScale} className="testimonial-card glass-card">
                 <div className="testimonial-stars">
                   {Array.from({ length: t.rating }).map((_, s) => (
                     <Star key={s} size={16} fill="currentColor" />
